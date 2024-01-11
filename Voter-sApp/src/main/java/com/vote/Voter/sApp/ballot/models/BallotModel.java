@@ -1,5 +1,6 @@
 package com.vote.Voter.sApp.ballot.models;
 
+import com.vote.Voter.sApp.ballot.enums.BallotStatus;
 import com.vote.Voter.sApp.ballot.enums.Title;
 import com.vote.Voter.sApp.candidate.models.CandidateModel;
 import jakarta.persistence.*;
@@ -19,6 +20,7 @@ public class BallotModel {
     private Long id;
     @Enumerated(EnumType.STRING)
     private Title title;
+    private BallotStatus ballotStatus;
     private String description;
     @OneToMany
     private List<CandidateModel> candidate;

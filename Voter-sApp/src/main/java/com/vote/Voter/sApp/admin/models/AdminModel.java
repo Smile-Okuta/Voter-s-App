@@ -1,10 +1,7 @@
 package com.vote.Voter.sApp.admin.models;
 
 import com.vote.Voter.sApp.user.models.UserModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Setter
@@ -17,6 +14,7 @@ public class AdminModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @OneToOne
     private UserModel user;
 
 }

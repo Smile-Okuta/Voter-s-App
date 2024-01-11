@@ -19,9 +19,10 @@ public class CandidateModel {
     @OneToOne
     private UserModel user;
     private String bio;
+    @Column(unique = true)
+    private String nominationNumber;
     @Enumerated(EnumType.STRING)
     private Title position;
     @Enumerated(EnumType.STRING)
     private Status status;
-
 }
