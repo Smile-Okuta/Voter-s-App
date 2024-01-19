@@ -6,6 +6,7 @@ import com.vote.Voter.sApp.user.models.UserModel;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,9 +21,9 @@ public class VoteModel {
     @OneToOne
     private UserModel user;
     @ManyToOne
-    private BallotModel ballot;
+    private List<BallotModel> ballot;
     @ManyToOne
-    private CandidateModel candidate;
+    private List<CandidateModel> candidate;
     private LocalDateTime dateTime;
 
 }

@@ -1,7 +1,7 @@
 package com.vote.Voter.sApp.ballot.models;
 
 import com.vote.Voter.sApp.ballot.enums.BallotStatus;
-import com.vote.Voter.sApp.ballot.enums.Title;
+import com.vote.Voter.sApp.ballot.enums.BallotTitle;
 import com.vote.Voter.sApp.candidate.models.CandidateModel;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,11 +19,13 @@ public class BallotModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
-    private Title title;
+    private BallotTitle ballotTitle;
+    @OneToOne
     private BallotStatus ballotStatus;
-    private String description;
+    private String location;
     @OneToMany
     private List<CandidateModel> candidate;
+    private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 }

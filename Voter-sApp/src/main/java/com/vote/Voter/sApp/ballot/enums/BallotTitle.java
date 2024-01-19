@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public enum BallotStatus {
-    PENDING, ACTIVE, CLOSED
+public enum BallotTitle {
+    PRESIDENTIAL, GOVERNORSHIP, LOCAL_CHAIRMAN
 }

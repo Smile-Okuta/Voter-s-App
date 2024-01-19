@@ -1,6 +1,6 @@
 package com.vote.Voter.sApp.candidate.models;
 
-import com.vote.Voter.sApp.ballot.enums.Title;
+import com.vote.Voter.sApp.ballot.enums.BallotTitle;
 import com.vote.Voter.sApp.candidate.enums.Status;
 import com.vote.Voter.sApp.user.models.UserModel;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ public class CandidateModel {
     @Column(unique = true)
     private String nominationNumber;
     @Enumerated(EnumType.STRING)
-    private Title position;
+    private BallotTitle position;
     @Enumerated(EnumType.STRING)
     private Status status;
 }

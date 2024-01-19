@@ -4,7 +4,7 @@ import com.vote.Voter.sApp.user.enums.UserRole;
 import jakarta.persistence.Column;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +20,6 @@ public class CreateUserRequest {
     private String gender;
     private String phoneNumber;
     private String address;
-    private LocalDateTime dateOfBirth;
+    private String dateOfBirth;
     private UserRole role;
 }

@@ -3,6 +3,8 @@ package com.vote.Voter.sApp.user.models;
 import com.vote.Voter.sApp.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -17,6 +19,7 @@ public class UserModel {
     private Long id;
     private String firstName;
     private String lastName;
+    @Column(unique = true)
     private String userName;
     @Column(unique = true)
     private String password;
@@ -28,7 +31,7 @@ public class UserModel {
     @Column(unique = true)
     private String phoneNumber;
     private String address;
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     private UserRole role;
 }
