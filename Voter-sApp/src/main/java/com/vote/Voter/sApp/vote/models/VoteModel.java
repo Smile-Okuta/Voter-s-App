@@ -21,9 +21,9 @@ public class VoteModel {
     @OneToOne
     private UserModel user;
     @ManyToOne
-    private List<BallotModel> ballot;
+    private BallotModel ballot;
     @ManyToOne
-    private List<CandidateModel> candidate;
+    private CandidateModel candidate;
     private LocalDateTime dateTime;
 
 }

@@ -1,4 +1,4 @@
-package com.vote.Voter.sApp.ballot.dto.request;
+package com.vote.Voter.sApp.pvc.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ViewBallotRequest {
-    private String location;
+public class LoginRequest {
+    private String email;
+    private String password;
 }

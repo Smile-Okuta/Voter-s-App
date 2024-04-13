@@ -1,5 +1,7 @@
 package com.vote.Voter.sApp.user.models;
 
+import com.vote.Voter.sApp.pvc.enums.Gender;
+import com.vote.Voter.sApp.pvc.models.PvcModel;
 import com.vote.Voter.sApp.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,20 +20,23 @@ public class UserModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
+    private String middleName;
     private String lastName;
+//    @Column(unique = true)
+//    private PvcModel pvcNumber;
+    @Column(unique = true)
+    private String nin;
+    @Column(unique = true)
+    private String email;
+    @Column(unique = true)
+    private String phoneNumber;
     @Column(unique = true)
     private String userName;
     @Column(unique = true)
     private String password;
-    @Column(unique = true)
-    private String pvcNumber;
-    @Column(unique = true)
-    private String email;
-    private String gender;
-    @Column(unique = true)
-    private String phoneNumber;
-    private String address;
-    private LocalDate dateOfBirth;
+    private Gender gender;
+//    private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+//    private UserRole role;
+    private  boolean isEnabled;
 }

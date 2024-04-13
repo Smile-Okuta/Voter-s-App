@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserModel, Id> {
+public interface UserRepository extends JpaRepository<UserModel, Long> {
     Optional<UserModel> findByPvc(String pvc);
 
     Boolean existsByPvc(String pvc);
@@ -18,7 +18,11 @@ public interface UserRepository extends JpaRepository<UserModel, Id> {
     boolean existsByEmail(String email);
 
     boolean existsByPassword(String password);
+    UserModel getUserByPvc(String pvc);
+    UserModel findByNin(String nin);
 
+
+//    UserModel findById(Long id);
 
 }
 

@@ -13,14 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 public class BallotModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
     private BallotTitle ballotTitle;
-    @OneToOne
+    @Enumerated(EnumType.STRING)
     private BallotStatus ballotStatus;
     private String location;
     @OneToMany

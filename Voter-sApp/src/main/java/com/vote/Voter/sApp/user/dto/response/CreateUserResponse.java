@@ -2,10 +2,10 @@ package com.vote.Voter.sApp.user.dto.response;
 
 import com.vote.Voter.sApp.user.enums.UserRole;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-@Getter
+@Setter
 public class CreateUserResponse {
 private String message;
 private UserRole userRole;
