@@ -1,11 +1,7 @@
 package com.vote.Voter.sApp.pvc.enums;
 
 import lombok.*;
-
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@RequiredArgsConstructor
-//@Getter
+@Getter
 public enum StateName  {
     ABIA("AB", 12),
     ABUJA("FCT", 11),
@@ -52,9 +48,10 @@ public enum StateName  {
         this.value = value;
         this.code = code;
     }
-    public String getValue(){
-        return this.value + this.code;
-    }
+//    public String getValue(String stateName){
+//
+//        return this.value + this.code;
+//    }
 
 
 

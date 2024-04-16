@@ -1,16 +1,12 @@
 package com.vote.Voter.sApp.user.servicesImpl;
 
-import com.vote.Voter.sApp.ballot.enums.BallotTitle;
 import com.vote.Voter.sApp.ballot.models.BallotModel;
-import com.vote.Voter.sApp.ballot.services.BallotService;
-import com.vote.Voter.sApp.candidate.models.CandidateModel;
 import com.vote.Voter.sApp.user.dto.request.CreateUserRequest;
 import com.vote.Voter.sApp.user.dto.request.LoginRequest;
 import com.vote.Voter.sApp.user.dto.request.ViewBallotRequest;
 import com.vote.Voter.sApp.user.dto.request.VoteCandidateRequest;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
-import com.vote.Voter.sApp.user.enums.UserRole;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
 import com.vote.Voter.sApp.user.exception.NotFoundException;
 import com.vote.Voter.sApp.user.models.UserModel;
@@ -18,27 +14,25 @@ import com.vote.Voter.sApp.user.repositories.UserRepository;
 import com.vote.Voter.sApp.user.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CandidateModel candidateModel;
-    private final BallotService ballotService;
+
     private final ModelMapper modelMapper;
+    private PasswordEncoder passwordEncoder;
 
 
 
     @Override
     public CreateUserResponse createUser(CreateUserRequest userRequest) {
-        UserModel userModel = createNewUser(userRequest);
         userExist(userRequest);
-        UserModel user = userRepository.save(userModel);
+        UserModel userModel = createNewUser(userRequest);
+        userRepository.save(userModel);
         return CreateUserResponse.builder()
                 .message("Voter Account created Successfully")
 //                .userRole(user.getRole())
@@ -47,30 +41,29 @@ public class UserServiceImpl implements UserService {
     }
 
     private void userExist(CreateUserRequest createUserRequest){
-        boolean isUserExist = userRepository.existsByPvc(createUserRequest.getPvcNumber());
+        boolean isUserExist = userRepository.existsByEmail(createUserRequest.getEmail());
         if (isUserExist){
-            throw new AlreadyExistException("User Already Exist");
+            throw new AlreadyExistException("User With this Nin Already Exist");
         }
 
     }
 
     private UserModel createNewUser(CreateUserRequest createUserRequest){
-        UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);
-//        LocalDate dateOfBirth = convertDateStringToLocalDate(createUserRequest.getDateOfBirth());
-//        userModel.setDateOfBirth(dateOfBirth);
-        passwordEncoder.encode(registerRequest.getPassword());
+        UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);;
+        passwordEncoder.encode(createUserRequest.getPassword());
         return userModel;
     }
 
-    private LocalDate convertDateStringToLocalDate(String dateOfBirth){
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return LocalDate.parse(dateOfBirth, dateTimeFormatter);
-    }
+//    private LocalDate convertDateStringToLocalDate(String dateOfBirth){
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//        return LocalDate.parse(dateOfBirth, dateTimeFormatter);
+//    }
 
 
 
     @Override
     public void login(LoginRequest loginRequest) {
+
         loginDetailsExist(loginRequest);
     }
 
@@ -105,10 +98,10 @@ public class UserServiceImpl implements UserService {
 //                .build();
 //    }
 
-    private UserModel getByPvc(String pvc){
-        return userRepository.findByPvc(pvc).orElseThrow(
-                ()-> new NotFoundException("User With The Provided Information Not Found"));
-    }
+//    private UserModel getByPvc(String pvc){
+//        return userRepository.findByPvc(pvc).orElseThrow(
+//                ()-> new NotFoundException("User With The Provided Information Not Found"));
+//    }
 
 
 

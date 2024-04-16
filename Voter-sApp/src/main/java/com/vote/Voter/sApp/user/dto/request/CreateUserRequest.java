@@ -11,15 +11,9 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class CreateUserRequest {
-    private String firstName;
-    private String lastName;
+
     private String userName;
     private String password;
-    private String pvcNumber;
     private String email;
-    private String gender;
-    private String phoneNumber;
-    private String address;
-    private String dateOfBirth;
-    private UserRole role;
+
 }

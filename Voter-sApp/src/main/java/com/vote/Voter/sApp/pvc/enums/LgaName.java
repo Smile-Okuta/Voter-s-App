@@ -1,11 +1,8 @@
 package com.vote.Voter.sApp.pvc.enums;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-
+@Getter
 
 public enum LgaName {
     SHOMOLU (12),
@@ -161,7 +158,7 @@ public enum LgaName {
     private LgaName(int lgaCode){
         this.lgaCode = lgaCode;
     }
-    private  int getLgaCode(){
+    public int getLgaCode(String lgaName){
         return this.lgaCode;
     }
 }

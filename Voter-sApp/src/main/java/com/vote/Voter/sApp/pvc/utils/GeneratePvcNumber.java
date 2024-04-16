@@ -36,10 +36,19 @@ public class GeneratePvcNumber {
 
     }
 
+    public static String lgaAndStateName(StateName stateName, LgaName pollingUnit){
 
-    public final String officialCode(){
-//       AddressModel addressModel = new AddressModel();
-        return null;
+        int stateCode = StateName.valueOf(String.valueOf(stateName)).getCode();
+        String stateValue = StateName.valueOf(String.valueOf(stateName)).getValue();
+
+        String stateKey = stateValue + stateCode;
+         int lgaCode = LgaName.valueOf(String.valueOf(pollingUnit)).getLgaCode();
+
+        return lgaCode + " " + stateKey;
     }
+
+
+
+
 
 }

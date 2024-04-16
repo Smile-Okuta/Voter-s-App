@@ -1,4 +1,4 @@
-package com.vote.Voter.sApp.config;
+package com.vote.Voter.sApp.security;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
