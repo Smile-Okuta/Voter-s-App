@@ -2,7 +2,6 @@ package com.vote.Voter.sApp.pvc.utils;
 
 import com.vote.Voter.sApp.pvc.enums.LgaName;
 import com.vote.Voter.sApp.pvc.enums.StateName;
-import com.vote.Voter.sApp.pvc.models.AddressModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,6 @@ public class GeneratePvcNumber {
         int thirdNum = random.nextInt(100, 999);
 
         return String.format("%d%s%d %s%d", secNum, firstLetter, firstNum, secLetter, thirdNum);
-
     }
 
     public static String lgaAndStateName(StateName stateName, LgaName pollingUnit){
@@ -46,9 +44,4 @@ public class GeneratePvcNumber {
 
         return lgaCode + " " + stateKey;
     }
-
-
-
-
-
 }

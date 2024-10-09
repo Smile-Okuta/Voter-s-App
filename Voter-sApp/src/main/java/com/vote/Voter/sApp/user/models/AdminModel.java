@@ -1,4 +1,4 @@
-package com.vote.Voter.sApp.admin.models;
+package com.vote.Voter.sApp.user.models;
 
 import com.vote.Voter.sApp.user.models.UserModel;
 import jakarta.persistence.*;

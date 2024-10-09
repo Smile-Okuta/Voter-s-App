@@ -1,7 +1,7 @@
 package com.vote.Voter.sApp.user.dto.response;
 
-import com.vote.Voter.sApp.ballot.models.BallotModel;
-import com.vote.Voter.sApp.candidate.models.CandidateModel;
+import com.vote.Voter.sApp.user.models.BallotModel;
+import com.vote.Voter.sApp.user.models.CandidateModel;
 import lombok.*;
 
 @Data

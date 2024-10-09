@@ -1,7 +1,7 @@
 package com.vote.Voter.sApp.user.dto.request;
 
 import com.vote.Voter.sApp.ballot.enums.BallotTitle;
-import com.vote.Voter.sApp.ballot.models.BallotModel;
+import com.vote.Voter.sApp.user.models.BallotModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

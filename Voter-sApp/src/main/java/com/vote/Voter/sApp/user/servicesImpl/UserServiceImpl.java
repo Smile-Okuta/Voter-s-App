@@ -1,6 +1,8 @@
 package com.vote.Voter.sApp.user.servicesImpl;
 
 import com.vote.Voter.sApp.ballot.models.BallotModel;
+import com.vote.Voter.sApp.user.enums.UserRole;
+import com.vote.Voter.sApp.user.exception.UserNotFoundException;
 import com.vote.Voter.sApp.user.dto.request.CreateUserRequest;
 import com.vote.Voter.sApp.user.dto.request.LoginRequest;
 import com.vote.Voter.sApp.user.dto.request.ViewBallotRequest;
@@ -8,15 +10,19 @@ import com.vote.Voter.sApp.user.dto.request.VoteCandidateRequest;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
-import com.vote.Voter.sApp.user.exception.NotFoundException;
 import com.vote.Voter.sApp.user.models.UserModel;
 import com.vote.Voter.sApp.user.repositories.UserRepository;
 import com.vote.Voter.sApp.user.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,24 +35,29 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    public List<UserModel> getUser() {
+        return userRepository.findAll();
+    }
+
+    @Override
     public CreateUserResponse createUser(CreateUserRequest userRequest) {
-        userExist(userRequest);
+        if (userExist(userRequest.getEmail())){
+            throw new AlreadyExistException(userRequest.getEmail() + " already exist");
+        }
         UserModel userModel = createNewUser(userRequest);
         userRepository.save(userModel);
         return CreateUserResponse.builder()
                 .message("Voter Account created Successfully")
-//                .userRole(user.getRole())
+                .userRole(UserRole.VOTER)
                 .build();
 
     }
 
-    private void userExist(CreateUserRequest createUserRequest){
-        boolean isUserExist = userRepository.existsByEmail(createUserRequest.getEmail());
-        if (isUserExist){
-            throw new AlreadyExistException("User With this Nin Already Exist");
-        }
-
+    private boolean userExist(String email){
+        return userRepository.findByEmail(email).isPresent();
     }
+
+
 
     private UserModel createNewUser(CreateUserRequest createUserRequest){
         UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);;
@@ -54,20 +65,62 @@ public class UserServiceImpl implements UserService {
         return userModel;
     }
 
-//    private LocalDate convertDateStringToLocalDate(String dateOfBirth){
-//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        return LocalDate.parse(dateOfBirth, dateTimeFormatter);
-//    }
-
 
 
     @Override
-    public void login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
+        Optional<UserModel> userLogin = userRepository.findByEmail(loginRequest.getEmail());
 
-        loginDetailsExist(loginRequest);
+        if (userLogin.isPresent()){
+            UserModel userModel = userLogin.get();
+
+            if (passwordEncoder.matches(loginRequest.getPassword(), userModel.getPassword())){
+                return "Login Successful";
+            }else {
+                return "Invalid Credentials";
+            }
+        }else {
+            return "User not found";
+        }
     }
 
+//    @Override
+//    public UserModel updateUser(UserModel userModel, Long id) {
+//        return userRepository.findById(id).map(user -> {
+//            user.setFirstName(userModel.getFirstName());
+//            user.setMiddleName(userModel.getMiddleName());
+//            user.setLastName(userModel.getLastName());
+//            user.setEmail(userModel.getEmail());
+//            user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+//            user.setPhoneNumber(userModel.getPhoneNumber());
+//            user.setGender(userModel.getGender());
+//            user.setAddressModel(userModel.getAddressModel());
+//            user.setStateOfOrigin(userModel.getStateOfOrigin());
+//            LocalDate dateOfBirth = convertDateStringToLocalDate(userModel.getDateOfBirth())
+//            user.setDateOfBirth(dateOfBirth);
+//            return userRepository.save(user);
+//            }).orElseThrow(()-> new UserNotFoundException("User not found"));
+//    }
+
     @Override
+    public UserModel updateUser(CreateUserRequest userModel, Long id) {
+        return userRepository.findById(id).map(user -> {
+            user.setFirstName(userModel.getFirstName());
+            user.setMiddleName(userModel.getMiddleName());
+            user.setLastName(userModel.getLastName());
+            user.setEmail(userModel.getEmail());
+            user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+            user.setPhoneNumber(userModel.getPhoneNumber());
+            user.setGender(userModel.getGender());
+            user.setAddressModel(userModel.getAddressModel());
+            user.setStateOfOrigin(userModel.getStateOfOrigin());
+            LocalDate dateOfBirth = convertDateStringToLocalDate(userModel.getDateOfBirth());
+            user.setDateOfBirth(dateOfBirth);
+            return userRepository.save(user);
+        }).orElseThrow(()-> new UserNotFoundException("User not found"));
+    }
+
+    @Override 
     public VoteCandidateResponse voteCandidate(VoteCandidateRequest voteRequest) {
         return null;
     }
@@ -77,14 +130,28 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private void loginDetailsExist(LoginRequest loginRequest){
-        boolean emailExist = userRepository.existsByEmail(loginRequest.getEmail());
-        boolean passwordExist = userRepository.existsByPassword(loginRequest.getPassword());
-        if (! emailExist && ! passwordExist ){
-            throw new NotFoundException("Email Address or Password is incorrect or does not exist");
-        }
+
+    @Override
+    public UserModel getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(()-> new UserNotFoundException("Sorry, no User with this Id was found"));
     }
 
+
+
+
+    private LocalDate convertDateStringToLocalDate(String dateOfBirth){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(dateOfBirth, dateTimeFormatter);
+    }
+
+//    private void loginDetailsExist(LoginRequest loginRequest){
+//        Optional<UserModel> emailExist = userRepository.existsByEmail(loginRequest.getEmail());
+//        boolean passwordExist = userRepository.existsByPassword(loginRequest.getPassword());
+//        if (emailExist.isEmpty() && !passwordExist ){
+//            throw new NotFoundException("Email Address or Password is incorrect or does not exist");
+//        }
+//    }
 
 //    @Override
 //    public VoteCandidateResponse voteCandidate(VoteCandidateRequest voteRequest) {

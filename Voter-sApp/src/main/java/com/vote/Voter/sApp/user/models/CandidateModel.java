@@ -1,4 +1,4 @@
-package com.vote.Voter.sApp.candidate.models;
+package com.vote.Voter.sApp.user.models;
 
 import com.vote.Voter.sApp.ballot.enums.BallotTitle;
 import com.vote.Voter.sApp.candidate.enums.Status;
@@ -21,8 +21,8 @@ public class CandidateModel {
     private String bio;
     @Column(unique = true)
     private String nominationNumber;
-    @Enumerated(EnumType.STRING)
-    private BallotTitle position;
-    @Enumerated(EnumType.STRING)
-    private Status status;
+//    @Enumerated(EnumType.STRING)
+//    private BallotTitle position;
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 }

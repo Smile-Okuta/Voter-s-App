@@ -1,4 +1,4 @@
 package com.vote.Voter.sApp.ballot.services;
 
-public class BallotService {
+public class VoteService {
 }

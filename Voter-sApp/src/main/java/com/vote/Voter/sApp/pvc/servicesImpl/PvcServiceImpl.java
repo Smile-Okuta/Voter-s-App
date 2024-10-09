@@ -1,6 +1,8 @@
 package com.vote.Voter.sApp.pvc.servicesImpl;
 
+import com.vote.Voter.sApp.pvc.dto.request.AddressRequest;
 import com.vote.Voter.sApp.pvc.dto.request.RegisterRequest;
+import com.vote.Voter.sApp.pvc.dto.request.UpdateRequest;
 import com.vote.Voter.sApp.pvc.dto.response.RegisterResponse;
 import com.vote.Voter.sApp.pvc.exception.NinDoesNotExistException;
 import com.vote.Voter.sApp.pvc.models.AddressModel;
@@ -9,35 +11,76 @@ import com.vote.Voter.sApp.pvc.repositories.PvcRepository;
 import com.vote.Voter.sApp.pvc.services.PvcService;
 import com.vote.Voter.sApp.pvc.utils.GeneratePvcNumber;
 
+import com.vote.Voter.sApp.user.exception.NotFoundException;
+import com.vote.Voter.sApp.user.models.UserModel;
+import com.vote.Voter.sApp.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PvcServiceImpl implements PvcService {
     private final PvcRepository pvcRepository;
-
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final UserModel userModel;
 
     @Override
     public RegisterResponse registerPvc (RegisterRequest createPvcRequest){
         PvcModel pvcModel = generateNewPvc(createPvcRequest);
         ninExist(createPvcRequest);
+        getPassword(createPvcRequest.getPassword());
         PvcModel pvc = pvcRepository.save(pvcModel);
         return RegisterResponse.builder()
-                .message(String.format("Congratulations %s %s, \nyou have been registered successfully\n\n", pvc.getFirstName(), pvc.getLastName()))
-                .firstName(pvc.getFirstName())
-                .middleName(pvc.getMiddleName())
-                .lastName(pvc.getLastName())
-                .stateOfOrigin(pvc.getStateOfOrigin())
-                .phoneNumber(pvc.getPhoneNumber())
+                .message(String.format("Congratulations %s %s, %n you have been registered successfully%n%n", pvc.getFirstName(), pvc.getLastName()))
                 .generatePvcNumber(pvc.getGeneratePvcNumber())
                 .build();
 
     }
+
+    @Override
+    public List<PvcModel> getAllPvc() {
+        return pvcRepository.findAll();
+    }
+
+    @Override
+    public RegisterResponse getPvcById(Long id) {
+        PvcModel pvcModel = findPvcById(id);
+        return RegisterResponse.builder()
+                .firstName(pvcModel.getFirstName())
+                .lastName(pvcModel.getLastName())
+                .address(pvcModel.getAddressModel())
+                .phoneNumber(pvcModel.getPhoneNumber())
+                .stateOfOrigin(pvcModel.getStateOfOrigin())
+                .build();
+    }
+
+    @Override
+    public RegisterResponse updatePvc(UpdateRequest updateRequest) {
+
+        return null;
+    }
+
+    private PvcModel findPvcById(Long id){
+        return pvcRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Pvc not found"));
+    }
+    private void getPassword(String password){
+       String userPassword = userRepository.findBy(password);
+//            String password = loginRequest.getPassword();
+//            String encodedPassword = checkUser.getPassword();
+        if (!passwordEncoder.matches(password, userPassword)){
+            throw new NotFoundException("Password does not match");
+        }
+
+    }
+
 
 
 //      ** Manual User Login **
@@ -87,27 +130,25 @@ public class PvcServiceImpl implements PvcService {
          throw new NinDoesNotExistException("Incorrect NIN or User with this NIN is not registered");
     }
 
-    private PvcModel generateNewPvc(RegisterRequest registerRequest){
+    private PvcModel generateNewPvc(RegisterRequest registerRequest, AddressRequest addressRequest){
 //        PvcModel pvcModel = modelMapper.map(registerRequest, PvcModel.class);
-        PvcModel pvcModel = new PvcModel();
-        pvcModel.setFirstName(registerRequest.getFirstName());
-        pvcModel.setMiddleName(registerRequest.getMiddleName());
-        pvcModel.setLastName(registerRequest.getLastName());
-        pvcModel.setNin(registerRequest.getNin());
-        pvcModel.setGender(registerRequest.getGender());
-        pvcModel.setStateOfOrigin(registerRequest.getStateOfOrigin());
-        pvcModel.setHouseNumber(registerRequest.getHouseNumber());
-        pvcModel.setStreetName(registerRequest.getStreetName());
-        pvcModel.setLgaName(registerRequest.getLgaName());
-        pvcModel.setStateName(registerRequest.getStateName());
+//        PvcModel pvcModel = new PvcModel();
+        userModel = userRepository.findById(Long id);
+
+        AddressModel addressModel = new AddressModel();
+        addressModel.setHouseNumber(addressRequest.getHouseNumber());
+        addressModel.setStreetName(addressRequest.getStreetName());
+        addressModel.setLgaName(addressRequest.getLgaName());
+        addressModel.setStateName(addressRequest.getStateName());
+        pvcModel.setAddressModel(addressModel);
 
         LocalDate dateOfBirth = convertDateStringToLocalDate(registerRequest.getDateOfBirth());
         pvcModel.setDateOfBirth(dateOfBirth);
 
         pvcModel.setOccupation(registerRequest.getOccupation());
         pvcModel.setPhoneNumber(registerRequest.getPhoneNumber());
-        pvcModel.setAlternativePhoneNumber(registerRequest.getAlternativePhoneNumber());
-        pvcModel.setGeneratePvcNumber(GeneratePvcNumber.generateUserPvc() + "" + GeneratePvcNumber.lgaAndStateName(pvcModel.getStateName(), registerRequest.getPollingUnit()));
+        pvcModel.setPollingUnit(registerRequest.getPollingUnit());
+        pvcModel.setGeneratePvcNumber(GeneratePvcNumber.generateUserPvc() + "" + GeneratePvcNumber.lgaAndStateName(addressModel.getStateName(), registerRequest.getPollingUnit()));
         return pvcModel;
     }
 
