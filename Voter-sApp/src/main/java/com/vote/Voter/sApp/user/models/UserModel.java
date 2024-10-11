@@ -1,10 +1,12 @@
 package com.vote.Voter.sApp.user.models;
 
+import com.vote.Voter.sApp.ballot.models.BallotModel;
 import com.vote.Voter.sApp.pvc.enums.Gender;
 import com.vote.Voter.sApp.pvc.models.AddressModel;
 import com.vote.Voter.sApp.pvc.models.PvcModel;
 import com.vote.Voter.sApp.user.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
@@ -26,10 +28,9 @@ public class UserModel {
     private String middleName;
     private String lastName;
     @Column(unique = true)
+    @Email
     @NaturalId(mutable = true)
     private String email;
-//    @Column(unique = true)
-//    private String userName;
     @Column(unique = true)
     private String password;
     @Column(unique = true)
@@ -45,4 +46,6 @@ public class UserModel {
     private LocalDateTime createdAt;
     private UserRole role;
     private  boolean isEnabled;
+    @OneToMany
+    private BallotModel ballotModel;
 }

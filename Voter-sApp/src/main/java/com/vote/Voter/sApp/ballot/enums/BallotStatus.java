@@ -1,5 +1,5 @@
 package com.vote.Voter.sApp.ballot.enums;
 
 public enum BallotStatus {
-    OPENED, CLOSED
+    OPENED, CLOSED, IN_PROGRESS
 }

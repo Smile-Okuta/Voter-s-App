@@ -9,6 +9,7 @@ import com.vote.Voter.sApp.user.dto.request.VoteCandidateRequest;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
 import com.vote.Voter.sApp.user.models.UserModel;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
