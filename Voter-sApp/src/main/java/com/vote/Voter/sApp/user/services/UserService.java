@@ -16,7 +16,7 @@ import java.util.List;
 public interface UserService {
 CreateUserResponse createUser (CreateUserRequest userRequest);
 String login(LoginRequest loginRequest);
-UserModel updateUser(CreateUserRequest userModel, Long id);
+UserModel updateUser(CreateUserRequest createUserRequest, Long id);
 VoteCandidateResponse voteCandidate(VoteCandidateRequest voteRequest);
 List<BallotModel> viewAvailableBallot(ViewBallotRequest userId);
 List<UserModel> getUser();

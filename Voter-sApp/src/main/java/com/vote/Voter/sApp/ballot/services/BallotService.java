@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 public interface BallotService {
 
     BallotModel createBallot (CreateBallotRequest ballotRequest);
-
+    BallotModel updateBallot (CreateBallotRequest updateBallotRequest, Long id);
 }

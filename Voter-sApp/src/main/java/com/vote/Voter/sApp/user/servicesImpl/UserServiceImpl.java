@@ -84,37 +84,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
-//    public UserModel updateUser(UserModel userModel, Long id) {
-//        return userRepository.findById(id).map(user -> {
-//            user.setFirstName(userModel.getFirstName());
-//            user.setMiddleName(userModel.getMiddleName());
-//            user.setLastName(userModel.getLastName());
-//            user.setEmail(userModel.getEmail());
-//            user.setPassword(passwordEncoder.encode(userModel.getPassword()));
-//            user.setPhoneNumber(userModel.getPhoneNumber());
-//            user.setGender(userModel.getGender());
-//            user.setAddressModel(userModel.getAddressModel());
-//            user.setStateOfOrigin(userModel.getStateOfOrigin());
-//            LocalDate dateOfBirth = convertDateStringToLocalDate(userModel.getDateOfBirth())
-//            user.setDateOfBirth(dateOfBirth);
-//            return userRepository.save(user);
-//            }).orElseThrow(()-> new UserNotFoundException("User not found"));
-//    }
 
     @Override
-    public UserModel updateUser(CreateUserRequest userModel, Long id) {
+    public UserModel updateUser(CreateUserRequest createUserRequest, Long id) {
         return userRepository.findById(id).map(user -> {
-            user.setFirstName(userModel.getFirstName());
-            user.setMiddleName(userModel.getMiddleName());
-            user.setLastName(userModel.getLastName());
-            user.setEmail(userModel.getEmail());
-            user.setPassword(passwordEncoder.encode(userModel.getPassword()));
-            user.setPhoneNumber(userModel.getPhoneNumber());
-            user.setGender(userModel.getGender());
-            user.setAddressModel(userModel.getAddressModel());
-            user.setStateOfOrigin(userModel.getStateOfOrigin());
-            LocalDate dateOfBirth = convertDateStringToLocalDate(userModel.getDateOfBirth());
+            user.setFirstName(createUserRequest.getFirstName());
+            user.setMiddleName(createUserRequest.getMiddleName());
+            user.setLastName(createUserRequest.getLastName());
+            user.setEmail(createUserRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+            user.setPhoneNumber(createUserRequest.getPhoneNumber());
+            user.setGender(createUserRequest.getGender());
+            user.setAddressModel(createUserRequest.getAddressModel());
+            user.setStateOfOrigin(createUserRequest.getStateOfOrigin());
+            LocalDate dateOfBirth = convertDateStringToLocalDate(createUserRequest.getDateOfBirth());
             user.setDateOfBirth(dateOfBirth);
             return userRepository.save(user);
         }).orElseThrow(()-> new UserNotFoundException("User not found"));
