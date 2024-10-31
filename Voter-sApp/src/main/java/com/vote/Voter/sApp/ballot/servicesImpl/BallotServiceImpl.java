@@ -6,11 +6,12 @@ import com.vote.Voter.sApp.ballot.exception.BallotNotFoundException;
 import com.vote.Voter.sApp.ballot.models.BallotModel;
 import com.vote.Voter.sApp.ballot.repositories.BallotRepository;
 import com.vote.Voter.sApp.ballot.services.BallotService;
+import com.vote.Voter.sApp.ballot.dto.request.ViewBallotRequest;
 import com.vote.Voter.sApp.user.enums.UserRole;
-import com.vote.Voter.sApp.user.repositories.CandidateRepository;
-import com.vote.Voter.sApp.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.vote.Voter.sApp.user.enums.UserRole.ADMIN;
 
@@ -46,6 +47,11 @@ public class BallotServiceImpl implements BallotService {
         invalidUser();
 
         return newUpdatedBallot(updateBallotRequest, id);
+    }
+
+    @Override
+    public List<BallotModel> viewAvailableBallot(ViewBallotRequest userId) {
+        return null;
     }
 
     private BallotModel newUpdatedBallot(CreateBallotRequest updateBallotRequest, Long id){

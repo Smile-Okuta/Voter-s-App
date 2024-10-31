@@ -1,12 +1,10 @@
 package com.vote.Voter.sApp.user.servicesImpl;
 
-import com.vote.Voter.sApp.ballot.models.BallotModel;
 import com.vote.Voter.sApp.user.enums.UserRole;
 import com.vote.Voter.sApp.user.exception.UserNotFoundException;
 import com.vote.Voter.sApp.user.dto.request.CreateUserRequest;
 import com.vote.Voter.sApp.user.dto.request.LoginRequest;
-import com.vote.Voter.sApp.user.dto.request.ViewBallotRequest;
-import com.vote.Voter.sApp.user.dto.request.VoteCandidateRequest;
+import com.vote.Voter.sApp.user.dto.request.VoteRequest;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
@@ -14,7 +12,6 @@ import com.vote.Voter.sApp.user.models.UserModel;
 import com.vote.Voter.sApp.user.repositories.UserRepository;
 import com.vote.Voter.sApp.user.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserModel> getUser() {
+    public List<UserModel> getAllUser() {
         return userRepository.findAll();
     }
 
@@ -104,14 +101,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override 
-    public VoteCandidateResponse voteCandidate(VoteCandidateRequest voteRequest) {
+    public VoteCandidateResponse voteCandidate(VoteRequest voteRequest) {
         return null;
     }
 
-    @Override
-    public List<BallotModel> viewAvailableBallot(ViewBallotRequest userId) {
-        return null;
-    }
+
 
 
     @Override
