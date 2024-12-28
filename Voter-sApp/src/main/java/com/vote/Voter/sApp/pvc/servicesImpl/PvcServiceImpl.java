@@ -1,7 +1,7 @@
 package com.vote.Voter.sApp.pvc.servicesImpl;
 
 import com.vote.Voter.sApp.pvc.dto.request.AddressRequest;
-import com.vote.Voter.sApp.pvc.dto.request.RegisterRequest;
+import com.vote.Voter.sApp.pvc.dto.request.CreatePvc;
 import com.vote.Voter.sApp.pvc.dto.request.UpdateRequest;
 import com.vote.Voter.sApp.pvc.dto.response.RegisterResponse;
 import com.vote.Voter.sApp.pvc.exception.NinDoesNotExistException;
@@ -26,13 +26,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PvcServiceImpl implements PvcService {
-    private final PvcRepository pvcRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-    private final UserModel userModel;
+    private PvcRepository pvcRepository;
+    private PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private UserModel userModel;
 
     @Override
-    public RegisterResponse registerPvc (RegisterRequest createPvcRequest){
+    public RegisterResponse registerPvc (CreatePvc createPvcRequest){
         PvcModel pvcModel = generateNewPvc(createPvcRequest);
         ninExist(createPvcRequest);
         getPassword(createPvcRequest.getPassword());
@@ -115,10 +115,10 @@ public class PvcServiceImpl implements PvcService {
 //            }
 //    }
 
-    private void ninExist(RegisterRequest registerRequest){
-        PvcModel isNinExist = pvcRepository.findByNin(registerRequest.getNin());
+    private void ninExist(CreatePvc createPvc){
+        PvcModel isNinExist = pvcRepository.findByNin(createPvc.getNin());
         if (isNinExist != null ){
-            String nin1 = registerRequest.getNin();
+            String nin1 = createPvc.getNin();
             String nin2 = isNinExist.getNin();
             boolean isEqual = nin1.matches(nin2);
             if (isEqual){
@@ -130,25 +130,25 @@ public class PvcServiceImpl implements PvcService {
          throw new NinDoesNotExistException("Incorrect NIN or User with this NIN is not registered");
     }
 
-    private PvcModel generateNewPvc(RegisterRequest registerRequest, AddressRequest addressRequest){
+    private PvcModel generateNewPvc(CreatePvc createPvc, AddressRequest addressRequest){
 //        PvcModel pvcModel = modelMapper.map(registerRequest, PvcModel.class);
 //        PvcModel pvcModel = new PvcModel();
-        userModel = userRepository.findById(Long id);
+        userModel = userRepository.findById();
 
         AddressModel addressModel = new AddressModel();
         addressModel.setHouseNumber(addressRequest.getHouseNumber());
         addressModel.setStreetName(addressRequest.getStreetName());
         addressModel.setLgaName(addressRequest.getLgaName());
         addressModel.setStateName(addressRequest.getStateName());
-        pvcModel.setAddressModel(addressModel);
+        userModel.setAddressModel(addressModel);
 
-        LocalDate dateOfBirth = convertDateStringToLocalDate(registerRequest.getDateOfBirth());
+        LocalDate dateOfBirth = convertDateStringToLocalDate(createPvc.getDateOfBirth());
         pvcModel.setDateOfBirth(dateOfBirth);
 
-        pvcModel.setOccupation(registerRequest.getOccupation());
-        pvcModel.setPhoneNumber(registerRequest.getPhoneNumber());
-        pvcModel.setPollingUnit(registerRequest.getPollingUnit());
-        pvcModel.setGeneratePvcNumber(GeneratePvcNumber.generateUserPvc() + "" + GeneratePvcNumber.lgaAndStateName(addressModel.getStateName(), registerRequest.getPollingUnit()));
+        pvcModel.setOccupation(createPvc.getOccupation());
+        pvcModel.setPhoneNumber(createPvc.getPhoneNumber());
+        pvcModel.setPollingUnit(createPvc.getPollingUnit());
+        pvcModel.setGeneratePvcNumber(GeneratePvcNumber.generateUserPvc() + "" + GeneratePvcNumber.lgaAndStateName(addressModel.getStateName(), createPvc.getPollingUnit()));
         return pvcModel;
     }
 

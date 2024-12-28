@@ -1,7 +1,7 @@
 package com.vote.Voter.sApp.ballot.dto.request;
-
-import com.vote.Voter.sApp.ballot.enums.BallotTitle;
-import com.vote.Voter.sApp.user.models.BallotModel;
+//
+//import com.vote.Voter.sApp.ballot.enums.BallotTitle;
+//import com.vote.Voter.sApp.user.models.BallotModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ViewBallotRequest {
     private String pvc;
-    private BallotTitle ballotTitle;
-    private List<BallotModel> location;
+//    private BallotTitle ballotTitle;
+//    private List<BallotModel> location;
 }

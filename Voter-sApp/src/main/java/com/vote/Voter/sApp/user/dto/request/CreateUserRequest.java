@@ -17,16 +17,9 @@ import java.time.LocalDate;
 @Builder
 public class CreateUserRequest {
     private String firstName;
-    private String middleName;
     private String lastName;
     private String email;
     private String password;
-    private PvcModel pvc;
-    private String phoneNumber;
-    private Gender gender;
-    private AddressModel addressModel;
-    private String stateOfOrigin;
-    private String dateOfBirth;
-    private String occupation;
+
 
 }

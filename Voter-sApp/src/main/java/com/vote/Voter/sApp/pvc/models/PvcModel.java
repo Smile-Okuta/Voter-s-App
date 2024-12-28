@@ -1,11 +1,11 @@
 package com.vote.Voter.sApp.pvc.models;
 
-import com.vote.Voter.sApp.pvc.enums.Gender;
 import com.vote.Voter.sApp.pvc.enums.LgaName;
+import com.vote.Voter.sApp.pvc.enums.StateName;
+import com.vote.Voter.sApp.user.models.UserModel;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -17,11 +17,12 @@ public class PvcModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    private String firstName;
-//    private String middleName;
-//    private String lastName;
+    private String bvn;
     @Column(unique = true)
-    private String generatePvcNumber;
-    private LgaName pollingUnit;
+    private LgaName localGovUnit;
+    @Column(unique = true)
+    private StateName stateUnit;
+    @OneToOne
+    private UserModel userModel;
     private LocalDateTime createdAt;
 }

@@ -1,10 +1,13 @@
 package com.vote.Voter.sApp.user.servicesImpl;
 
+import com.vote.Voter.sApp.pvc.models.AddressModel;
+import com.vote.Voter.sApp.pvc.models.PvcModel;
+import com.vote.Voter.sApp.pvc.repositories.PvcRepository;
 import com.vote.Voter.sApp.user.enums.UserRole;
 import com.vote.Voter.sApp.user.exception.UserNotFoundException;
 import com.vote.Voter.sApp.user.dto.request.CreateUserRequest;
 import com.vote.Voter.sApp.user.dto.request.LoginRequest;
-import com.vote.Voter.sApp.user.dto.request.VoteRequest;
+import com.vote.Voter.sApp.user.dto.request.UpdateUserRequest;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
@@ -25,9 +28,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
     private final ModelMapper modelMapper;
     private PasswordEncoder passwordEncoder;
+    private PvcRepository pvcRepository;
 
 
 
@@ -83,29 +86,35 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserModel updateUser(CreateUserRequest createUserRequest, Long id) {
-        return userRepository.findById(id).map(user -> {
-            user.setFirstName(createUserRequest.getFirstName());
-            user.setMiddleName(createUserRequest.getMiddleName());
-            user.setLastName(createUserRequest.getLastName());
-            user.setEmail(createUserRequest.getEmail());
-            user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
-            user.setPhoneNumber(createUserRequest.getPhoneNumber());
-            user.setGender(createUserRequest.getGender());
-            user.setAddressModel(createUserRequest.getAddressModel());
-            user.setStateOfOrigin(createUserRequest.getStateOfOrigin());
-            LocalDate dateOfBirth = convertDateStringToLocalDate(createUserRequest.getDateOfBirth());
-            user.setDateOfBirth(dateOfBirth);
-            return userRepository.save(user);
-        }).orElseThrow(()-> new UserNotFoundException("User not found"));
+    public UserModel updateUser(UpdateUserRequest updateUserRequest, Long id) {
+        UserModel user = userRepository.findByEmail(updateUserRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User with the provided email not found."));
+
+            user.setFirstName(updateUserRequest.getFirstName());
+            user.setLastName(updateUserRequest.getLastName());
+            user.setEmail(updateUserRequest.getEmail());
+
+            PvcModel pvc = new PvcModel();
+            pvc.setBvn(updateUserRequest.getPvc().getBvn());
+            pvc.setLocalGovUnit(updateUserRequest.getPvc().getLocalGovUnit());
+            pvc.setStateUnit(updateUserRequest.getPvc().getStateUnit());
+            PvcModel savedPVC = pvcRepository.save(pvc);
+
+            user.setPvc(savedPVC);
+            user.setGender(updateUserRequest.getGender());
+
+            AddressModel address = new AddressModel();
+            address.setHouseNumber(updateUserRequest.getCreateAddress().getHouseNumber());
+            address.setStreetName(updateUserRequest.getCreateAddress().getStreetName());
+            address.setLgaName(updateUserRequest.getCreateAddress().getLgaName());
+            address.setStateName(updateUserRequest.getCreateAddress().getStateName());
+            user.setAddressModel(address);
+
+            user.setStateOfOrigin(updateUserRequest.getStateOfOrigin());
+            user.setOccupation(updateUserRequest.getOccupation());
+
+        return userRepository.save(user);
     }
-
-    @Override 
-    public VoteCandidateResponse voteCandidate(VoteRequest voteRequest) {
-        return null;
-    }
-
-
 
 
     @Override
@@ -121,6 +130,8 @@ public class UserServiceImpl implements UserService {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return LocalDate.parse(dateOfBirth, dateTimeFormatter);
     }
+
+
 
 //    private void loginDetailsExist(LoginRequest loginRequest){
 //        Optional<UserModel> emailExist = userRepository.existsByEmail(loginRequest.getEmail());
