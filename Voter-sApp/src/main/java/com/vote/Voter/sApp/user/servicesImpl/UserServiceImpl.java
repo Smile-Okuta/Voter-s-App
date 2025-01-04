@@ -3,14 +3,11 @@ package com.vote.Voter.sApp.user.servicesImpl;
 import com.vote.Voter.sApp.pvc.models.AddressModel;
 import com.vote.Voter.sApp.pvc.models.PvcModel;
 import com.vote.Voter.sApp.pvc.repositories.PvcRepository;
-import com.vote.Voter.sApp.user.enums.UserRole;
-import com.vote.Voter.sApp.user.exception.UserNotFoundException;
-import com.vote.Voter.sApp.user.dto.request.CreateUserRequest;
-import com.vote.Voter.sApp.user.dto.request.LoginRequest;
-import com.vote.Voter.sApp.user.dto.request.UpdateUserRequest;
+import com.vote.Voter.sApp.user.dto.request.*;
 import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
-import com.vote.Voter.sApp.user.dto.response.VoteCandidateResponse;
+import com.vote.Voter.sApp.user.enums.UserRole;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
+import com.vote.Voter.sApp.user.exception.UserNotFoundException;
 import com.vote.Voter.sApp.user.models.UserModel;
 import com.vote.Voter.sApp.user.repositories.UserRepository;
 import com.vote.Voter.sApp.user.services.UserService;
@@ -19,10 +16,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.security.crypto.keygen.KeyGenerators.secureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private PasswordEncoder passwordEncoder;
     private PvcRepository pvcRepository;
-
+    private final SecureRandom secureRandom = new SecureRandom();
 
 
     @Override
@@ -40,10 +40,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserModel> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+
+    @Override
     public CreateUserResponse createUser(CreateUserRequest userRequest) {
-        if (userExist(userRequest.getEmail())){
-            throw new AlreadyExistException(userRequest.getEmail() + " already exist");
+        if (userExist(userRequest.email())) {
+            throw new AlreadyExistException(userRequest.email() + " already exist");
         }
+
+        var userModel = new UserModel();
         UserModel userModel = createNewUser(userRequest);
         userRepository.save(userModel);
         return CreateUserResponse.builder()
@@ -53,33 +61,36 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private boolean userExist(String email){
+    private boolean userExist(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
 
-
-    private UserModel createNewUser(CreateUserRequest createUserRequest){
-        UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);;
-        passwordEncoder.encode(createUserRequest.getPassword());
+    private UserModel createNewUser(CreateUserRequest createUserRequest) {
+        UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);
+        ;
+        passwordEncoder.encode(createUserRequest.password());
         return userModel;
     }
 
+    @Override
+    public void validateUser (String email){
 
+    }
 
     @Override
     public String login(LoginRequest loginRequest) {
         Optional<UserModel> userLogin = userRepository.findByEmail(loginRequest.getEmail());
 
-        if (userLogin.isPresent()){
+        if (userLogin.isPresent()) {
             UserModel userModel = userLogin.get();
 
-            if (passwordEncoder.matches(loginRequest.getPassword(), userModel.getPassword())){
+            if (passwordEncoder.matches(loginRequest.getPassword(), userModel.getPassword())) {
                 return "Login Successful";
-            }else {
+            } else {
                 return "Invalid Credentials";
             }
-        }else {
+        } else {
             return "User not found";
         }
     }
@@ -90,28 +101,33 @@ public class UserServiceImpl implements UserService {
         UserModel user = userRepository.findByEmail(updateUserRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User with the provided email not found."));
 
-            user.setFirstName(updateUserRequest.getFirstName());
-            user.setLastName(updateUserRequest.getLastName());
-            user.setEmail(updateUserRequest.getEmail());
+        user.setFirstName(updateUserRequest.getFirstName());
+        user.setLastName(updateUserRequest.getLastName());
+        user.setEmail(updateUserRequest.getEmail());
+        user.setUsername(updateUserRequest.getUsername());
+        user.setPassword(updateUserRequest.getPassword());
 
-            PvcModel pvc = new PvcModel();
-            pvc.setBvn(updateUserRequest.getPvc().getBvn());
-            pvc.setLocalGovUnit(updateUserRequest.getPvc().getLocalGovUnit());
-            pvc.setStateUnit(updateUserRequest.getPvc().getStateUnit());
-            PvcModel savedPVC = pvcRepository.save(pvc);
 
-            user.setPvc(savedPVC);
-            user.setGender(updateUserRequest.getGender());
+        PvcModel pvc = new PvcModel();
+        pvc.setBvn(updateUserRequest.getPvc().getBvn());
+        pvc.setLocalGovUnit(updateUserRequest.getPvc().getLocalGovUnit());
+        pvc.setStateUnit(updateUserRequest.getPvc().getStateUnit());
+        PvcModel savedPVC = pvcRepository.save(pvc);
 
-            AddressModel address = new AddressModel();
-            address.setHouseNumber(updateUserRequest.getCreateAddress().getHouseNumber());
-            address.setStreetName(updateUserRequest.getCreateAddress().getStreetName());
-            address.setLgaName(updateUserRequest.getCreateAddress().getLgaName());
-            address.setStateName(updateUserRequest.getCreateAddress().getStateName());
-            user.setAddressModel(address);
+        user.setPvc(savedPVC);
+        user.setPhoneNumber(updateUserRequest.getPhoneNumber());
+        user.setGender(updateUserRequest.getGender());
 
-            user.setStateOfOrigin(updateUserRequest.getStateOfOrigin());
-            user.setOccupation(updateUserRequest.getOccupation());
+        AddressModel address = new AddressModel();
+        address.setHouseNumber(updateUserRequest.getCreateAddress().getHouseNumber());
+        address.setStreetName(updateUserRequest.getCreateAddress().getStreetName());
+        address.setLgaName(updateUserRequest.getCreateAddress().getLgaName());
+        address.setStateName(updateUserRequest.getCreateAddress().getStateName());
+        user.setAddressModel(address);
+
+        user.setStateOfOrigin(updateUserRequest.getStateOfOrigin());
+        user.setDateOfBirth(convertDateStringToLocalDate(updateUserRequest.getDateOfBirth()));
+        user.setOccupation(updateUserRequest.getOccupation());
 
         return userRepository.save(user);
     }
@@ -120,11 +136,64 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(()-> new UserNotFoundException("Sorry, no User with this Id was found"));
+                .orElseThrow(() -> new UserNotFoundException("Sorry, no User with this Id was found"));
+    }
+
+
+    @Override
+    public void changePassword(ChangePasswordRequest passwordRequest) {
+
+        UserModel user = userRepository.findByPvc(passwordRequest.getPvcNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid PVC number."));
+
+        if (!passwordEncoder.matches(passwordRequest.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(passwordRequest.getNewPassword());
+
+        user.setPassword(encodedPassword);
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void forgetPassword(ForgetPasswordRequest forgetPasswordRequest) {
+//        get PVC
+//        get Email linked to the PVC
+//        Generate Token
+//        Send token to the email
+//        save temporary token and link to the email
+//        get token
+//        compare received token to the one saved with the email
+//        If token is correct return the userModel that's connected to the emailAddress.
+//        Discard token
+//        Else ("Invalid Token")
+
+        UserModel findPvc = userRepository.findByPvc(forgetPasswordRequest.getPvcNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid PVC number."));
+
+        String getEmail = findPvc.getEmail();
+
+        sendEmailToken(getEmail);
+
+
+    }
+
+    private String sendEmailToken(String email){
+
+
+
+        return null;
     }
 
 
 
+
+    private String generateSecureCode() {
+        int code = 100000 + secureRandom.nextInt(900000);
+        return String.valueOf(code);
+    }
 
     private LocalDate convertDateStringToLocalDate(String dateOfBirth){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -132,52 +201,4 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-//    private void loginDetailsExist(LoginRequest loginRequest){
-//        Optional<UserModel> emailExist = userRepository.existsByEmail(loginRequest.getEmail());
-//        boolean passwordExist = userRepository.existsByPassword(loginRequest.getPassword());
-//        if (emailExist.isEmpty() && !passwordExist ){
-//            throw new NotFoundException("Email Address or Password is incorrect or does not exist");
-//        }
-//    }
-
-//    @Override
-//    public VoteCandidateResponse voteCandidate(VoteCandidateRequest voteRequest) {
-//        UserModel userModel = userRepository.getUserByPvc(voteRequest.getPvcNumber());
-//        voteRequest.setBallot(userModel.getAddress());
-//        voteRequest.setCandidate(userModel.set);
-//
-//        return VoteCandidateResponse.builder()
-//                .candidate(voteRequest.getCandidate())
-//                .ballot(voteRequest.getBallot())
-//                .build();
-//    }
-
-//    private UserModel getByPvc(String pvc){
-//        return userRepository.findByPvc(pvc).orElseThrow(
-//                ()-> new NotFoundException("User With The Provided Information Not Found"));
-//    }
-
-
-
-
-//    @Override
-//    public List<BallotModel> viewAvailableBallot(ViewBallotRequest viewBallotRequest) {
-//        UserModel user = getByPvc(viewBallotRequest.getPvc());
-//
-//        if (user.getRole().equals(UserRole.VOTER)) {
-//            viewBallotRequest.setLocation(user.getAddress());
-//            viewBallotRequest.setBallotTitle(BallotTitle.PRESIDENTIAL);
-//        }
-//        return ballotService.getAvailableBallots(viewBallotRequest.getLocation());
-//    }
-
-//    private UserModel getUserById(){
-//        return userRepository.findById(id);
-//    }
-
-
 }
-
-
-
