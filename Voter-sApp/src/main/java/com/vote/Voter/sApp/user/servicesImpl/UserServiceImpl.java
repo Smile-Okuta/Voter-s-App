@@ -12,7 +12,6 @@ import com.vote.Voter.sApp.user.models.UserModel;
 import com.vote.Voter.sApp.user.repositories.UserRepository;
 import com.vote.Voter.sApp.user.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +21,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.security.crypto.keygen.KeyGenerators.secureRandom;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
-    private PasswordEncoder passwordEncoder;
-    private PvcRepository pvcRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final PvcRepository pvcRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
 
@@ -51,7 +48,6 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyExistException(userRequest.email() + " already exist");
         }
 
-        var userModel = new UserModel();
         UserModel userModel = createNewUser(userRequest);
         userRepository.save(userModel);
         return CreateUserResponse.builder()
@@ -67,9 +63,13 @@ public class UserServiceImpl implements UserService {
 
 
     private UserModel createNewUser(CreateUserRequest createUserRequest) {
-        UserModel userModel = modelMapper.map(createUserRequest, UserModel.class);
-        ;
-        passwordEncoder.encode(createUserRequest.password());
+        var userModel = new UserModel();
+
+        userModel.setFirstName(createUserRequest.firstName());
+        userModel.setLastName(createUserRequest.lastName());
+        userModel.setEmail(createUserRequest.email());
+        userModel.setPassword(passwordEncoder.encode(createUserRequest.password()));
+
         return userModel;
     }
 
@@ -180,11 +180,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private String sendEmailToken(String email){
+    private void sendEmailToken(String email){
 
 
 
-        return null;
     }
 
 
