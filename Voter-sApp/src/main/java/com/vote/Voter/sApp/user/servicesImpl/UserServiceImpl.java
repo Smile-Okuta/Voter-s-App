@@ -4,8 +4,6 @@ import com.vote.Voter.sApp.pvc.models.AddressModel;
 import com.vote.Voter.sApp.pvc.models.PvcModel;
 import com.vote.Voter.sApp.pvc.repositories.PvcRepository;
 import com.vote.Voter.sApp.user.dto.request.*;
-import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
-import com.vote.Voter.sApp.user.enums.UserRole;
 import com.vote.Voter.sApp.user.exception.AlreadyExistException;
 import com.vote.Voter.sApp.user.exception.UserNotFoundException;
 import com.vote.Voter.sApp.user.models.UserModel;
@@ -43,17 +41,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public CreateUserResponse createUser(CreateUserRequest userRequest) {
+    public String createUser(CreateUserRequest userRequest) {
         if (userExist(userRequest.email())) {
             throw new AlreadyExistException(userRequest.email() + " already exist");
         }
 
-        UserModel userModel = createNewUser(userRequest);
+        var userModel = createNewUser(userRequest);
         userRepository.save(userModel);
-        return CreateUserResponse.builder()
-                .message("Voter Account created Successfully")
-                .userRole(UserRole.VOTER)
-                .build();
+        return "Account created successfully";
 
     }
 
@@ -63,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
 
     private UserModel createNewUser(CreateUserRequest createUserRequest) {
-        var userModel = new UserModel();
+        UserModel userModel = new UserModel();
 
         userModel.setFirstName(createUserRequest.firstName());
         userModel.setLastName(createUserRequest.lastName());

@@ -1,14 +1,13 @@
 package com.vote.Voter.sApp.user.services;
 
 import com.vote.Voter.sApp.user.dto.request.*;
-import com.vote.Voter.sApp.user.dto.response.CreateUserResponse;
 import com.vote.Voter.sApp.user.models.UserModel;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-CreateUserResponse createUser (CreateUserRequest userRequest);
+String createUser (CreateUserRequest userRequest);
 
 String login(LoginRequest loginRequest);
 
